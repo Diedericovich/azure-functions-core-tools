@@ -7,6 +7,7 @@ trigger:
     - v3.x
     - release_4.0
     - release_3.0
+    - shkr/mirror-test
     - release_4.0_hotfix
 
 resources:
