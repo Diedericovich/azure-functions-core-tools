@@ -446,7 +446,8 @@ namespace Azure.Functions.Cli.Tests.E2E
                 CommandTimeout = TimeSpan.FromSeconds(300),
             }, _output);
         }
-
+        
+        //this
         [Fact]
         public async Task start_dotnet6_inproc_with_specifying_runtime()
         {
@@ -473,6 +474,7 @@ namespace Azure.Functions.Cli.Tests.E2E
                         if (_output is Xunit.Sdk.TestOutputHelper testOutputHelper)
                         {
                             testOutputHelper.Output.Should().Contain("Selected inproc6 host");
+                            testOutputHelper.Output.Should().Contain("Update sdk to the latest");
                         }
                     }
                 },

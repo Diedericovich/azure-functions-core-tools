@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Azure.Functions.Cli.Common;
 using Colors.Net;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -308,6 +309,59 @@ namespace Azure.Functions.Cli.Helpers
 
             exe = new Executable("dotnet", $"new -u \"{itemTemplates}\"");
             await exe.RunAsync();
+        }
+
+        public static string DetermineSdkVersion(string projectFilePath, string packageName)
+        {
+            /*
+            EnsureDotnet();
+
+            var exe = new Executable("dotnet", $"list \"{projectFilePath}\" package | findstr Microsoft.NET.Sdk.Functions");
+            await exe.RunAsync();
+
+            StringBuilder output = new();
+            var exitCode = await exe.RunAsync(o => output.Append(o), e => ColoredConsole.Error.WriteLine(ErrorColor(e)));
+            if (exitCode != 0)
+            {
+                throw new CliException($"Can not determine target framework for dotnet project at ${projectFilePath}");
+            }
+
+            return output.ToString();
+
+            */
+
+            string version = "";
+
+            try
+            {
+                var doc = XDocument.Load(projectFilePath);
+                var packageReference = doc.Descendants("PackageReference")
+                                          .FirstOrDefault(pr => pr.Attribute("Include")?.Value == packageName);
+
+                if (packageReference != null)
+                {
+                    version = packageReference.Attribute("Version")?.Value;
+                    if (version != null)
+                    {
+                        Console.WriteLine($"Package '{packageName}' version: {version}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Version attribute not found for package '{packageName}'.");
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return version;
         }
 
         private static async Task UninstallWebJobsTemplates()

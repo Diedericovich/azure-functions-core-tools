@@ -537,6 +537,11 @@ namespace Azure.Functions.Cli.Actions.HostActions
                 {
                     ColoredConsole.WriteLine(VerboseColor($"Selected {InProc6HostRuntime} host"));
                 }
+                if (IsValidInProcSdkVersion())
+                {
+                    ColoredConsole.WriteLine(VerboseColor($"Update sdk to the latest. See docs - link {InProc6HostRuntime} host"));
+                    throw new CliException($"Update sdk to the latest. See docs - link");
+                }
                 if (!isCurrentProcessNet6Build)
                 {
                     throw new CliException($"Cannot set host runtime to '{SetHostRuntime}' for the current process. The current process is not a .NET 6 build.");
@@ -546,6 +551,32 @@ namespace Azure.Functions.Cli.Actions.HostActions
             {
                 throw new CliException($"Invalid host runtime '{SetHostRuntime}'. Valid values are 'default', 'in-proc8', 'in-proc6'.");
             }
+            return false;
+        }
+
+        private bool IsValidInProcSdkVersion()
+        {
+            // We should try to infer if we run inproc6 host, inproc8 host, or OOP host (default)
+            var functionAppRoot = ScriptHostHelpers.GetFunctionAppRootDirectory(Environment.CurrentDirectory);
+
+            // Get the WorkerRuntime
+            var workerRuntime = GlobalCoreToolsSettings.CurrentWorkerRuntime;
+            string t = "";
+
+            string projectFilePath = ProjectHelpers.FindProjectFile(functionAppRoot);
+            if (projectFilePath != null)
+            {
+                t = DotnetHelpers.DetermineSdkVersion(projectFilePath, "Microsoft.NET.Sdk.Function");
+            }
+
+            Version version1 = new Version(t);
+            Version version2 = new Version("4.4.1");
+
+            if (version1 < version2)
+            {
+                return true;
+            }
+
             return false;
         }
 
