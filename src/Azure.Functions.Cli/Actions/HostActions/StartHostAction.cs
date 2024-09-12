@@ -566,7 +566,7 @@ namespace Azure.Functions.Cli.Actions.HostActions
             string projectFilePath = ProjectHelpers.FindProjectFile(functionAppRoot);
             if (projectFilePath != null)
             {
-                t = DotnetHelpers.DetermineSdkVersion(projectFilePath, "Microsoft.NET.Sdk.Function");
+                t = DotnetHelpers.DetermineSdkVersion(projectFilePath, "Microsoft.NET.Sdk.Functions");
             }
 
             Version version1 = new Version(t);
@@ -617,6 +617,11 @@ namespace Azure.Functions.Cli.Actions.HostActions
                     {
                         ColoredConsole.WriteLine(VerboseColor($"Selected {InProc6HostRuntime} host"));
                     }
+                    if (IsValidInProcSdkVersion())
+                    {
+                        throw new CliException($"Update sdk to the latest. See docs - link");
+                    }
+
                     shouldLaunchOopProcess = false;
                 }
             }
