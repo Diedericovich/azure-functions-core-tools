@@ -539,8 +539,8 @@ namespace Azure.Functions.Cli.Actions.HostActions
                 }
                 if (IsValidInProcSdkVersion())
                 {
-                    ColoredConsole.WriteLine(VerboseColor($"Update sdk to the latest. See docs - link {InProc6HostRuntime} host"));
-                    throw new CliException($"Update sdk to the latest. See docs - link");
+                    ColoredConsole.WriteLine(VerboseColor($"1 Update sdk to the latest. See docs - link {InProc6HostRuntime} host"));
+                    throw new CliException($"1 Update sdk to the latest. See docs - link");
                 }
                 if (!isCurrentProcessNet6Build)
                 {
@@ -619,7 +619,8 @@ namespace Azure.Functions.Cli.Actions.HostActions
                     }
                     if (IsValidInProcSdkVersion())
                     {
-                        throw new CliException($"Update sdk to the latest. See docs - link");
+                        ColoredConsole.WriteLine(VerboseColor($"2 Update sdk to the latest. See docs - link {InProc6HostRuntime} host"));
+                        throw new CliException($"2 Update sdk to the latest. See docs - link");
                     }
 
                     shouldLaunchOopProcess = false;
