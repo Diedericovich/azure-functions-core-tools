@@ -6,6 +6,8 @@ using System.Xml;
 using System;
 using Azure.Functions.Cli.Diagnostics;
 using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
+using Microsoft.Build.Evaluation;
 
 namespace Azure.Functions.Cli.Helpers
 {
@@ -78,11 +80,36 @@ namespace Azure.Functions.Cli.Helpers
             return root;
         }
 
-        public static bool PackageReferenceExists(this ProjectRootElement project, string packageId)
+        public static ProjectItemElement GetPackageReference(this ProjectRootElement project, string packageId)
         {
             ProjectItemElement existingPackageReference = project.Items
                 .FirstOrDefault(item => item.ItemType == Constants.PackageReferenceElementName && item.Include.ToLowerInvariant() == packageId.ToLowerInvariant());
+
+            return existingPackageReference;
+        }
+        public static bool PackageReferenceExists(this ProjectRootElement project, string packageId)
+        {
+            ProjectItemElement existingPackageReference = GetPackageReference(project, packageId);
             return existingPackageReference != null;
+        }
+
+        public static string GetPackageVersion(string projectFilePath, string packageName)
+        {
+            var project = GetProject(projectFilePath);
+            ProjectItemElement existingPackageReference = GetPackageReference(project, packageName);
+            
+            string version = null;
+
+            if (existingPackageReference != null)
+            {
+                version = existingPackageReference.Metadata.FirstOrDefault(m => m.Name == "Version")?.Value;
+                if (version != null)
+                {
+                    return version;
+                }
+            }
+
+            return null;
         }
 
         public static string GetPropertyValue(this ProjectRootElement project, string propertyName)
