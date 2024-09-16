@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "azure_functions_core_tools": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7266",
+      "launchBrowser": false
+    }
+  }
+}
